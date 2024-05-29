@@ -1,40 +1,4 @@
-// Copyright (c) 2013-2014 The Rust Project Developers.
-// Copyright (c) 2015-2020 The rust-hex Developers.
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
-//! Encoding and decoding hex strings.
-//!
-//! For most cases, you can simply use the [`decode`], [`encode`] and
-//! [`encode_upper`] functions. If you need a bit more control, use the traits
-//! [`ToHex`] and [`FromHex`] instead.
-//!
-//! # Example
-//!
-//! ```
-//! # #[cfg(not(feature = "alloc"))]
-//! # let mut output = [0; 0x18];
-//! #
-//! # #[cfg(not(feature = "alloc"))]
-//! # hex::encode_to_slice(b"Hello world!", &mut output).unwrap();
-//! #
-//! # #[cfg(not(feature = "alloc"))]
-//! # let hex_string = ::core::str::from_utf8(&output).unwrap();
-//! #
-//! # #[cfg(feature = "alloc")]
-//! let hex_string = hex::encode("Hello world!");
-//!
-//! println!("{}", hex_string); // Prints "48656c6c6f20776f726c6421"
-//!
-//! # assert_eq!(hex_string, "48656c6c6f20776f726c6421");
-//! ```
-
-#![doc(html_root_url = "https://docs.rs/hex/0.4.3")]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(docsrs, feature(doc_cfg))]
 #![allow(clippy::unreadable_literal)]
 
 #[cfg(feature = "alloc")]
@@ -63,7 +27,7 @@ pub use crate::serde::{serialize, serialize_upper};
 /// # Example
 ///
 /// ```
-/// use hex::ToHex;
+/// use hex_core::ToHex;
 ///
 /// println!("{}", "Hello world!".encode_hex::<String>());
 /// # assert_eq!("Hello world!".encode_hex::<String>(), "48656c6c6f20776f726c6421".to_string());
@@ -152,14 +116,14 @@ impl<T: AsRef<[u8]>> ToHex for T {
 ///
 /// ```
 /// use core::str;
-/// use hex::FromHex;
+/// use hex_core::FromHex;
 ///
 /// let buffer = <[u8; 12]>::from_hex("48656c6c6f20776f726c6421")?;
 /// let string = str::from_utf8(&buffer).expect("invalid buffer length");
 ///
 /// println!("{}", string); // prints "Hello world!"
 /// # assert_eq!("Hello world!", string);
-/// # Ok::<(), hex::FromHexError>(())
+/// # Ok::<(), hex_core::FromHexError>(())
 /// ```
 pub trait FromHex: Sized {
     type Error;
@@ -251,8 +215,8 @@ from_hex_array_impl! {
 /// # Example
 ///
 /// ```
-/// assert_eq!(hex::encode("Hello world!"), "48656c6c6f20776f726c6421");
-/// assert_eq!(hex::encode(vec![1, 2, 3, 15, 16]), "0102030f10");
+/// assert_eq!(hex_core::encode("Hello world!"), "48656c6c6f20776f726c6421");
+/// assert_eq!(hex_core::encode(vec![1, 2, 3, 15, 16]), "0102030f10");
 /// ```
 #[must_use]
 #[cfg(feature = "alloc")]
@@ -267,8 +231,8 @@ pub fn encode<T: AsRef<[u8]>>(data: T) -> String {
 /// # Example
 ///
 /// ```
-/// assert_eq!(hex::encode_upper("Hello world!"), "48656C6C6F20776F726C6421");
-/// assert_eq!(hex::encode_upper(vec![1, 2, 3, 15, 16]), "0102030F10");
+/// assert_eq!(hex_core::encode_upper("Hello world!"), "48656C6C6F20776F726C6421");
+/// assert_eq!(hex_core::encode_upper(vec![1, 2, 3, 15, 16]), "0102030F10");
 /// ```
 #[must_use]
 #[cfg(feature = "alloc")]
@@ -285,12 +249,12 @@ pub fn encode_upper<T: AsRef<[u8]>>(data: T) -> String {
 ///
 /// ```
 /// assert_eq!(
-///     hex::decode("48656c6c6f20776f726c6421"),
+///     hex_core::decode("48656c6c6f20776f726c6421"),
 ///     Ok("Hello world!".to_owned().into_bytes())
 /// );
 ///
-/// assert_eq!(hex::decode("123"), Err(hex::FromHexError::OddLength));
-/// assert!(hex::decode("foo").is_err());
+/// assert_eq!(hex_core::decode("123"), Err(hex_core::FromHexError::OddLength));
+/// assert!(hex_core::decode("foo").is_err());
 /// ```
 #[cfg(feature = "alloc")]
 pub fn decode<T: AsRef<[u8]>>(data: T) -> Result<Vec<u8>, FromHexError> {
@@ -306,7 +270,7 @@ pub fn decode<T: AsRef<[u8]>>(data: T) -> Result<Vec<u8>, FromHexError> {
 ///
 /// ```
 /// let mut bytes = [0u8; 4];
-/// assert_eq!(hex::decode_to_slice("6b697769", &mut bytes as &mut [u8]), Ok(()));
+/// assert_eq!(hex_core::decode_to_slice("6b697769", &mut bytes as &mut [u8]), Ok(()));
 /// assert_eq!(&bytes, b"kiwi");
 /// ```
 pub fn decode_to_slice<T: AsRef<[u8]>>(data: T, out: &mut [u8]) -> Result<(), FromHexError> {
@@ -355,11 +319,11 @@ const fn byte2hex(byte: u8, table: &[u8; 16]) -> (u8, u8) {
 /// # Example
 ///
 /// ```
-/// # use hex::FromHexError;
+/// # use hex_core::FromHexError;
 /// # fn main() -> Result<(), FromHexError> {
 /// let mut bytes = [0u8; 4 * 2];
 ///
-/// hex::encode_to_slice(b"kiwi", &mut bytes)?;
+/// hex_core::encode_to_slice(b"kiwi", &mut bytes)?;
 /// assert_eq!(&bytes, b"6b697769");
 /// # Ok(())
 /// # }
@@ -368,14 +332,14 @@ const fn byte2hex(byte: u8, table: &[u8; 16]) -> (u8, u8) {
 /// If the buffer is too large, an error is returned:
 ///
 /// ```
-/// use hex::FromHexError;
+/// use hex_core::FromHexError;
 /// # fn main() -> Result<(), FromHexError> {
 /// let mut bytes = [0_u8; 5 * 2];
 ///
-/// assert_eq!(hex::encode_to_slice(b"kiwi", &mut bytes), Err(FromHexError::InvalidStringLength));
+/// assert_eq!(hex_core::encode_to_slice(b"kiwi", &mut bytes), Err(FromHexError::InvalidStringLength));
 ///
 /// // you can do this instead:
-/// hex::encode_to_slice(b"kiwi", &mut bytes[..4 * 2])?;
+/// hex_core::encode_to_slice(b"kiwi", &mut bytes[..4 * 2])?;
 /// assert_eq!(&bytes, b"6b697769\0\0");
 /// # Ok(())
 /// # }

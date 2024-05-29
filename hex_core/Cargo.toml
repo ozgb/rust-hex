@@ -1,0 +1,20 @@
+[package]
+name = "hex_core"
+version = "0.4.3"
+authors = ["KokaKiwi <kokakiwi@kokakiwi.net>"]
+description = "Encoding and decoding data into/from hexadecimal representation."
+license = "MIT OR Apache-2.0"
+documentation = "https://docs.rs/hex/"
+repository = "https://github.com/ozgb/rust-hex"
+edition = "2021"
+
+[features]
+default = ["std"]
+alloc = []
+std = ["alloc"]
+
+[dependencies]
+serde = { version = "1.0", default-features = false, optional = true }
+
+[dev-dependencies]
+pretty_assertions = "0.6"
